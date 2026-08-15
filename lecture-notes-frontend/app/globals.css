@@ -1,8 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAF9F6;
+  --foreground: #1C1C1E;
+
+  /* Brand accent — warm amber/orange, used for primary actions */
+  --color-accent: #E86A33;
+  --color-accent-hover: #D65A28;
+  --color-accent-soft: #FCEEE3;
+
+  /* Neutrals — text and borders */
+  --color-text-primary: #1C1C1E;
+  --color-text-secondary: #6B6B6B;
+  --color-text-muted: #9A9A9A;
+  --color-border: #EDEAE3;
+  --color-border-dashed: #D9D5CE;
+  --color-surface: #FFFFFF;
+  --color-surface-alt: #FAF9F6;
+
+  /* Status colors */
+  --color-status-pending-bg: #F3F0EA;
+  --color-status-pending-text: #8A8578;
+  --color-status-processing-bg: #FCEEE3;
+  --color-status-processing-text: #E86A33;
+  --color-status-done-bg: #E8F3EC;
+  --color-status-done-text: #2F9E56;
+  --color-status-failed-bg: #FBEAEA;
+  --color-status-failed-text: #D64545;
+
+  /* Feedback */
+  --color-error: #EF4444;
 }
 
 @theme inline {
@@ -10,13 +37,29 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-accent-soft: var(--color-accent-soft);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-muted: var(--color-text-muted);
+  --color-border: var(--color-border);
+  --color-border-dashed: var(--color-border-dashed);
+  --color-surface: var(--color-surface);
+  --color-surface-alt: var(--color-surface-alt);
+
+  --color-status-pending-bg: var(--color-status-pending-bg);
+  --color-status-pending-text: var(--color-status-pending-text);
+  --color-status-processing-bg: var(--color-status-processing-bg);
+  --color-status-processing-text: var(--color-status-processing-text);
+  --color-status-done-bg: var(--color-status-done-bg);
+  --color-status-done-text: var(--color-status-done-text);
+  --color-status-failed-bg: var(--color-status-failed-bg);
+  --color-status-failed-text: var(--color-status-failed-text);
+
+  --color-error: var(--color-error);
 }
 
 body {
