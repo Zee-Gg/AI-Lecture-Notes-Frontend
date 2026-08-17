@@ -1,6 +1,7 @@
 'use client';
 import { useState, FormEvent } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { apiFetch } from '../lib/apiClient';
 
 type Props = {
   courseId: string;
@@ -46,19 +47,13 @@ export default function UploadLectureModal({ courseId, open, onClose, onUploaded
       formData.append('audio', file);
       formData.append('title', title);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/lectures/course/${courseId}`,
-        {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${session?.access_token}` },
-          body: formData,
-        }
-      );
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Upload failed');
-      }
+      await apiFetch(`/api/lectures/course/${courseId}`, {
+        method: 'POST',
+        headers: session?.access_token
+          ? { Authorization: `Bearer ${session.access_token}` }
+          : undefined,
+        body: formData,
+      });
 
       setTitle('');
       setFile(null);
