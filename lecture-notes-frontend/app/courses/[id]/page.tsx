@@ -6,6 +6,7 @@ import { apiFetch } from '../../lib/apiClient';
 import { Lecture } from '../../types/database';
 import StatusBadge from '../../components/StatusBadge';
 import UploadLectureModal from '../../components/UploadLectureModal';
+import CourseChat from '../../components/CourseChat';
 import Link from 'next/link';
 
 export default function CourseDetail() {
@@ -32,30 +33,30 @@ export default function CourseDetail() {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-[#FAF9F6] px-6 py-10 sm:px-12">
+      <main className="min-h-screen bg-surface-alt px-6 py-10 sm:px-12">
         <div className="max-w-4xl mx-auto">
-          <Link href="/dashboard" className="text-sm text-[#9A9A9A] hover:text-[#6B6B6B]">
+          <Link href="/dashboard" className="text-sm text-text-muted hover:text-text-secondary">
             ← Back to courses
           </Link>
 
           <div className="flex items-center justify-between mt-4 mb-10">
-            <h1 className="text-3xl font-bold text-[#1C1C1E] tracking-tight">
+            <h1 className="text-3xl font-bold text-text-primary tracking-tight">
               Lectures
             </h1>
             <button
               onClick={() => setModalOpen(true)}
-              className="bg-[#E86A33] hover:bg-[#D65A28] text-white font-medium px-5 py-2.5 rounded-xl shadow-sm transition-colors"
+              className="bg-accent hover:bg-accent-hover text-white font-medium px-5 py-2.5 rounded-xl shadow-sm transition-colors"
             >
               + Upload Lecture
             </button>
           </div>
 
           {loading ? (
-            <p className="text-[#6B6B6B]">Loading lectures...</p>
+            <p className="text-text-secondary">Loading lectures...</p>
           ) : lectures.length === 0 ? (
-            <div className="text-center py-24 border border-dashed border-[#D9D5CE] rounded-2xl">
-              <p className="text-[#6B6B6B] text-lg">No lectures uploaded yet.</p>
-              <p className="text-[#9A9A9A] text-sm mt-1">
+            <div className="text-center py-24 border border-dashed border-border-dashed rounded-2xl">
+              <p className="text-text-secondary text-lg">No lectures uploaded yet.</p>
+              <p className="text-text-muted text-sm mt-1">
                 Upload your first recording to generate notes.
               </p>
             </div>
@@ -65,11 +66,11 @@ export default function CourseDetail() {
                 <Link
                   key={lecture.id}
                   href={`/lectures/${lecture.id}`}
-                  className="flex items-center justify-between bg-white border border-[#EDEAE3] rounded-xl px-5 py-4 hover:shadow-sm transition-shadow"
+                  className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow"
                 >
                   <div>
-                    <h3 className="font-medium text-[#1C1C1E]">{lecture.title}</h3>
-                    <p className="text-[#9A9A9A] text-sm mt-0.5">
+                    <h3 className="font-medium text-text-primary">{lecture.title}</h3>
+                    <p className="text-text-muted text-sm mt-0.5">
                       {new Date(lecture.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -78,6 +79,11 @@ export default function CourseDetail() {
               ))}
             </div>
           )}
+
+          {/* Course-level Q&A chat — searches across every lecture in this course */}
+          <div className="mt-10">
+            <CourseChat courseId={id} />
+          </div>
         </div>
 
         <UploadLectureModal
