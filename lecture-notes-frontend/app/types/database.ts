@@ -36,3 +36,16 @@ export type Chunk = {
   end_time: number;
 };
 
+export type ChatCitation = {
+  lectureId: string;
+  lectureTitle: string;
+  startTime: number;
+  endTime: number;
+};
+
+export type ChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  citations?: ChatCitation[];
+};
