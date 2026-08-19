@@ -10,7 +10,7 @@ type Props = {
   onUploaded: () => void;
 };
 
-const MAX_SIZE_MB = 200;
+const MAX_SIZE_MB = 45;
 
 export default function UploadLectureModal({ courseId, open, onClose, onUploaded }: Props) {
   const [title, setTitle] = useState('');
