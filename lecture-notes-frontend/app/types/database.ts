@@ -13,10 +13,10 @@ export type Lecture = {
   title: string;
   audio_url: string | null;
   transcript_text: string | null;
+  transcript_segments: { text: string; start: number; end: number }[] | null;
   status: LectureStatus;
   created_at: string;
 };
-
 export type Notes = {
   id: string;
   lecture_id: string;

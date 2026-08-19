@@ -189,10 +189,10 @@ export default function LectureDetail() {
                       <div className="space-y-3">
                         {notes.definitions.map((d, i) => (
                           <div key={i}>
-                            <p className="font-medium text-text-primary text-sm">
+                            <p className="font-medium text-text-primary text-sm" dir="auto">
                               {d.term}
                             </p>
-                            <p className="text-text-secondary text-sm mt-0.5">
+                            <p className="text-text-secondary text-sm mt-0.5" dir="auto">
                               {d.definition}
                             </p>
                           </div>
@@ -249,14 +249,31 @@ export default function LectureDetail() {
                   </NotesSection>
                 </>
               )}
-
               <details className="bg-surface border border-border rounded-2xl p-6">
                 <summary className="font-semibold text-text-primary cursor-pointer">
                   Full Transcript
                 </summary>
-                <p className="text-text-secondary text-sm whitespace-pre-wrap leading-relaxed mt-4">
-                  {lecture.transcript_text || "No transcript available."}
-                </p>
+                <div className="mt-4 space-y-3">
+                  {lecture.transcript_segments &&
+                  lecture.transcript_segments.length > 0 ? (
+                    lecture.transcript_segments.map((seg, i) => (
+                      <p
+                        key={i}
+                        dir="auto"
+                        className="text-text-secondary text-sm leading-relaxed [unicode-bidi:plaintext] text-start"
+                      >
+                        {seg.text}
+                      </p>
+                    ))
+                  ) : (
+                    <p
+                      dir="auto"
+                      className="text-text-secondary text-sm whitespace-pre-wrap leading-relaxed"
+                    >
+                      {lecture.transcript_text || "No transcript available."}
+                    </p>
+                  )}
+                </div>
               </details>
               {chunkCount !== null && (
                 <p className="text-text-muted text-xs text-center">
