@@ -189,10 +189,16 @@ export default function LectureDetail() {
                       <div className="space-y-3">
                         {notes.definitions.map((d, i) => (
                           <div key={i}>
-                            <p className="font-medium text-text-primary text-sm" dir="auto">
+                            <p
+                              className="font-medium text-text-primary text-sm"
+                              dir="auto"
+                            >
                               {d.term}
                             </p>
-                            <p className="text-text-secondary text-sm mt-0.5" dir="auto">
+                            <p
+                              className="text-text-secondary text-sm mt-0.5"
+                              dir="auto"
+                            >
                               {d.definition}
                             </p>
                           </div>
@@ -259,17 +265,13 @@ export default function LectureDetail() {
                     lecture.transcript_segments.map((seg, i) => (
                       <p
                         key={i}
-                        dir="auto"
-                        className="text-text-secondary text-sm leading-relaxed [unicode-bidi:plaintext] text-start"
+                        className="text-text-secondary text-sm leading-relaxed"
                       >
                         {seg.text}
                       </p>
                     ))
                   ) : (
-                    <p
-                      dir="auto"
-                      className="text-text-secondary text-sm whitespace-pre-wrap leading-relaxed"
-                    >
+                    <p className="text-text-secondary text-sm whitespace-pre-wrap leading-relaxed">
                       {lecture.transcript_text || "No transcript available."}
                     </p>
                   )}
