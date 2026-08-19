@@ -7,6 +7,7 @@ import { Lecture } from '../../types/database';
 import StatusBadge from '../../components/StatusBadge';
 import UploadLectureModal from '../../components/UploadLectureModal';
 import CourseChat from '../../components/CourseChat';
+import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
 import Link from 'next/link';
 
 export default function CourseDetail() {
@@ -14,6 +15,8 @@ export default function CourseDetail() {
   const [lectures, setLectures] = useState<Lecture[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [lectureToDelete, setLectureToDelete] = useState<Lecture | null>(null);
+  const [deletingLecture, setDeletingLecture] = useState(false);
 
   const fetchLectures = () => {
     return apiFetch<Lecture[]>(`/api/lectures/course/${id}`).then((data) => {
@@ -29,6 +32,20 @@ export default function CourseDetail() {
 
   const handleUploaded = () => {
     fetchLectures().catch((err) => console.error(err));
+  };
+
+  const handleDeleteLecture = async () => {
+    if (!lectureToDelete) return;
+    setDeletingLecture(true);
+    try {
+      await apiFetch(`/api/lectures/${lectureToDelete.id}`, { method: 'DELETE' });
+      setLectureToDelete(null);
+      fetchLectures();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDeletingLecture(false);
+    }
   };
 
   return (
@@ -63,19 +80,27 @@ export default function CourseDetail() {
           ) : (
             <div className="space-y-3">
               {lectures.map((lecture) => (
-                <Link
+                <div
                   key={lecture.id}
-                  href={`/lectures/${lecture.id}`}
-                  className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow"
+                  className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow group"
                 >
-                  <div>
+                  <Link href={`/lectures/${lecture.id}`} className="flex-1">
                     <h3 className="font-medium text-text-primary">{lecture.title}</h3>
                     <p className="text-text-muted text-sm mt-0.5">
                       {new Date(lecture.created_at).toLocaleDateString()}
                     </p>
+                  </Link>
+                  <div className="flex items-center gap-3">
+                    <StatusBadge status={lecture.status} />
+                    <button
+                      onClick={() => setLectureToDelete(lecture)}
+                      className="opacity-0 group-hover:opacity-100 text-text-muted hover:text-status-failed-text transition-opacity"
+                      aria-label="Delete lecture"
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <StatusBadge status={lecture.status} />
-                </Link>
+                </div>
               ))}
             </div>
           )}
@@ -91,6 +116,15 @@ export default function CourseDetail() {
           open={modalOpen}
           onClose={() => setModalOpen(false)}
           onUploaded={handleUploaded}
+        />
+
+        <ConfirmDeleteModal
+          open={lectureToDelete !== null}
+          title="Delete this lecture?"
+          message={`This will permanently delete "${lectureToDelete?.title}" including its transcript, notes, and audio. This can't be undone.`}
+          onCancel={() => setLectureToDelete(null)}
+          onConfirm={handleDeleteLecture}
+          deleting={deletingLecture}
         />
       </main>
     </ProtectedRoute>
