@@ -6,6 +6,7 @@ import { apiFetch } from "../../lib/apiClient";
 import { Lecture, Notes } from "../../types/database";
 import StatusBadge from "../../components/StatusBadge";
 import NotesSection from "../../components/NotesSection";
+import EditableTitle from "../../components/EditableTitle";
 import { useLecturePolling } from "../../hooks/useLecturePolling";
 import Link from "next/link";
 
@@ -71,6 +72,14 @@ export default function LectureDetail() {
     lecture?.status === "pending" || lecture?.status === "processing";
   useLecturePolling(id, handleLectureUpdate, isProcessing);
 
+  const handleRenameLecture = async (newTitle: string) => {
+    const updated = await apiFetch<Lecture>(`/api/lectures/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title: newTitle }),
+    });
+    setLecture(updated);
+  };
+
   if (lectureLoading) {
     return (
       <main className="min-h-screen bg-surface-alt flex items-center justify-center">
@@ -108,7 +117,10 @@ export default function LectureDetail() {
 
           <div className="flex items-center justify-between mt-4 mb-8">
             <h1 className="text-3xl font-bold text-text-primary tracking-tight">
-              {lecture.title}
+              <EditableTitle
+                value={lecture.title}
+                onSave={handleRenameLecture}
+              />
             </h1>
             <StatusBadge status={lecture.status} />
           </div>
