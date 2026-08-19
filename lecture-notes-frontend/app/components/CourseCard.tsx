@@ -1,9 +1,10 @@
-'use client';
-import { useState } from 'react';
-import { Course } from '../types/database';
-import Link from 'next/link';
-import { apiFetch } from '../lib/apiClient';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
+"use client";
+import { useState } from "react";
+import { Course } from "../types/database";
+import Link from "next/link";
+import EditableTitle from "./EditableTitle";
+import { apiFetch } from "../lib/apiClient";
+import ConfirmDeleteModal from "./ConfirmDeleteModal";
 
 type Props = {
   course: Course;
@@ -17,7 +18,7 @@ export default function CourseCard({ course, onDeleted }: Props) {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await apiFetch(`/api/courses/${course.id}`, { method: 'DELETE' });
+      await apiFetch(`/api/courses/${course.id}`, { method: "DELETE" });
       onDeleted();
     } catch (err) {
       console.error(err);
@@ -25,6 +26,14 @@ export default function CourseCard({ course, onDeleted }: Props) {
       setDeleting(false);
       setConfirmOpen(false);
     }
+  };
+
+  const handleRename = async (newName: string) => {
+    await apiFetch(`/api/courses/${course.id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ name: newName }),
+    });
+    onDeleted(); // reuse the existing refetch callback to refresh the list with the new name
   };
 
   return (
@@ -39,7 +48,7 @@ export default function CourseCard({ course, onDeleted }: Props) {
           </span>
         </div>
         <h3 className="font-semibold text-text-primary text-lg truncate pr-6">
-          {course.name}
+          <EditableTitle value={course.name} onSave={handleRename} />
         </h3>
         <p className="text-text-muted text-sm mt-1">
           Created {new Date(course.created_at).toLocaleDateString()}
