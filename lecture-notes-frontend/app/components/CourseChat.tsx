@@ -1,5 +1,6 @@
 'use client';
 import { useState, FormEvent, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { apiFetch } from '../lib/apiClient';
 import { ChatMessage, ChatCitation } from '../types/database';
 import CitationChip from './CitationChip';
@@ -67,23 +68,30 @@ export default function CourseChat({ courseId }: { courseId: string }) {
         {messages.length === 0 && (
           <div className="h-full flex items-center justify-center text-center px-8">
             <p className="text-text-muted text-sm">
-              Ask something like "What did the teacher say about normalization&?" — it'll search every lecture in this course.
+              Ask something like "What did the teacher say about normalization?" — it&aposll search every lecture in this course.
             </p>
           </div>
         )}
 
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[80%] ${msg.role === 'user' ? 'items-end' : 'items-start'} flex flex-col gap-2`}>
-              <div
-                className={`rounded-2xl px-4 py-2.5 text-sm ${
-                  msg.role === 'user'
-                    ? 'bg-accent text-white'
-                    : 'bg-surface-alt text-text-primary border border-border'
-                }`}
-              >
-                {msg.content}
-              </div>
+            <div className={`max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'items-start'} flex flex-col gap-2`}>
+              {msg.role === 'user' ? (
+                <div className="rounded-2xl px-4 py-2.5 text-sm bg-accent text-white">
+                  {msg.content}
+                </div>
+              ) : (
+                <div className="rounded-2xl px-5 py-4 text-sm bg-surface-alt text-text-primary border border-border leading-relaxed
+                  [&_p]:mb-3 [&_p:last-child]:mb-0
+                  [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-2 [&_ol]:mb-3
+                  [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-2 [&_ul]:mb-3
+                  [&_li]:leading-relaxed
+                  [&_strong]:font-semibold [&_strong]:text-text-primary
+                  [&_code]:bg-surface [&_code]:border [&_code]:border-border [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-xs [&_code]:font-mono
+                ">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
+              )}
               {msg.citations && msg.citations.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {msg.citations.map((c, i) => (
