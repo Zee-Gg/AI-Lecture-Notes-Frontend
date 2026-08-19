@@ -1,14 +1,14 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import ProtectedRoute from '../../components/ProtectedRoute';
-import { apiFetch } from '../../lib/apiClient';
-import { Lecture } from '../../types/database';
-import StatusBadge from '../../components/StatusBadge';
-import UploadLectureModal from '../../components/UploadLectureModal';
-import CourseChat from '../../components/CourseChat';
-import ConfirmDeleteModal from '../../components/ConfirmDeleteModal';
-import Link from 'next/link';
+"use client";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import ProtectedRoute from "../../components/ProtectedRoute";
+import { apiFetch } from "../../lib/apiClient";
+import { Lecture } from "../../types/database";
+import StatusBadge from "../../components/StatusBadge";
+import UploadLectureModal from "../../components/UploadLectureModal";
+import CourseChat from "../../components/CourseChat";
+import ConfirmDeleteModal from "../../components/ConfirmDeleteModal";
+import Link from "next/link";
 
 export default function CourseDetail() {
   const { id } = useParams<{ id: string }>();
@@ -38,7 +38,9 @@ export default function CourseDetail() {
     if (!lectureToDelete) return;
     setDeletingLecture(true);
     try {
-      await apiFetch(`/api/lectures/${lectureToDelete.id}`, { method: 'DELETE' });
+      await apiFetch(`/api/lectures/${lectureToDelete.id}`, {
+        method: "DELETE",
+      });
       setLectureToDelete(null);
       fetchLectures();
     } catch (err) {
@@ -52,7 +54,10 @@ export default function CourseDetail() {
     <ProtectedRoute>
       <main className="min-h-screen bg-surface-alt px-6 py-10 sm:px-12">
         <div className="max-w-4xl mx-auto">
-          <Link href="/dashboard" className="text-sm text-text-muted hover:text-text-secondary">
+          <Link
+            href="/dashboard"
+            className="text-sm text-text-muted hover:text-text-secondary"
+          >
             ← Back to courses
           </Link>
 
@@ -72,7 +77,9 @@ export default function CourseDetail() {
             <p className="text-text-secondary">Loading lectures...</p>
           ) : lectures.length === 0 ? (
             <div className="text-center py-24 border border-dashed border-border-dashed rounded-2xl">
-              <p className="text-text-secondary text-lg">No lectures uploaded yet.</p>
+              <p className="text-text-secondary text-lg">
+                No lectures uploaded yet.
+              </p>
               <p className="text-text-muted text-sm mt-1">
                 Upload your first recording to generate notes.
               </p>
@@ -85,12 +92,33 @@ export default function CourseDetail() {
                   className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-4 hover:shadow-sm transition-shadow group"
                 >
                   <Link href={`/lectures/${lecture.id}`} className="flex-1">
-                    <h3 className="font-medium text-text-primary">{lecture.title}</h3>
+                    <h3 className="font-medium text-text-primary">
+                      {lecture.title}
+                    </h3>
                     <p className="text-text-muted text-sm mt-0.5">
                       {new Date(lecture.created_at).toLocaleDateString()}
                     </p>
                   </Link>
                   <div className="flex items-center gap-3">
+                    {lecture.status === "failed" && (
+                    <button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        try {
+                          await apiFetch(`/api/lectures/${lecture.id}/retry`, {
+                            method: "POST",
+                          });
+                          fetchLectures();
+                        } catch (err) {
+                          console.error(err);
+                        }
+                      }}
+                      className="text-text-muted hover:text-accent transition-colors text-sm"
+                      aria-label="Retry processing"
+                    >
+                      ↻ Retry
+                    </button>
+                  )}
                     <StatusBadge status={lecture.status} />
                     <button
                       onClick={() => setLectureToDelete(lecture)}
@@ -100,6 +128,7 @@ export default function CourseDetail() {
                       ✕
                     </button>
                   </div>
+                  
                 </div>
               ))}
             </div>
