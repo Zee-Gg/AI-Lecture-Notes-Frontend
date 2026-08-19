@@ -22,6 +22,7 @@ export default function LectureDetail() {
   const [notesError, setNotesError] = useState<string | null>(null);
 
   const [chunkCount, setChunkCount] = useState<number | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
   useEffect(() => {
     if (lecture?.status === "done") {
@@ -32,20 +33,19 @@ export default function LectureDetail() {
   }, [lecture?.status, id]);
 
   // Fetch the lecture itself
-  useEffect(() => {
-    if (!id) return;
-
-    apiFetch<Lecture>(`/api/lectures/${id}`)
-      .then((data) => setLecture(data))
-      .catch((err) => {
-        console.error(err);
-        setLectureError(
-          err instanceof Error ? err.message : "Failed to load lecture",
-        );
-      })
-      .finally(() => setLectureLoading(false));
-  }, [id]);
-
+  const handleRetry = async () => {
+    setRetrying(true);
+    try {
+      await apiFetch(`/api/lectures/${id}/retry`, { method: "POST" });
+      // Refetch lecture so UI reflects the new "pending" status and polling kicks back in
+      const updated = await apiFetch<Lecture>(`/api/lectures/${id}`);
+      setLecture(updated);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRetrying(false);
+    }
+  };
   // Fetch notes once the lecture is done
   useEffect(() => {
     if (!id || lecture?.status !== "done") return;
@@ -144,12 +144,19 @@ export default function LectureDetail() {
               <p className="text-status-failed-text font-medium">
                 Transcription failed.
               </p>
-              <p className="text-text-muted text-sm mt-1">
-                Try re-uploading the audio file, or check the file format.
+              <p className="text-text-muted text-sm mt-1 mb-4">
+                This can happen with network hiccups or provider limits. You can
+                retry without re-uploading.
               </p>
+              <button
+                onClick={handleRetry}
+                disabled={retrying}
+                className="bg-accent hover:bg-accent-hover text-white font-medium px-5 py-2 rounded-xl transition-colors disabled:opacity-60"
+              >
+                {retrying ? "Retrying..." : "Retry Processing"}
+              </button>
             </div>
           )}
-
           {lecture.status === "done" && (
             <div className="space-y-5">
               {notesLoading && (
