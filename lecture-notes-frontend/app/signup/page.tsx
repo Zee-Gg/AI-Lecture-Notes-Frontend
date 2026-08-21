@@ -1,50 +1,148 @@
 'use client';
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '../lib/supabaseClient';
 
 export default function Signup() {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
   const handleSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setSubmitting(true);
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
+      setSubmitting(false);
     } else {
       router.push('/login');
     }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <form onSubmit={handleSignup} className="w-full max-w-sm p-6 border rounded-lg space-y-4">
-        <h1 className="text-2xl font-bold">Sign Up</h1>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full border p-2 rounded"
-          required
+    <main className="min-h-screen bg-surface-alt flex">
+      {/* Branding panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-accent relative overflow-hidden flex-col justify-between p-12">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 rounded-full bg-white/10"
         />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border p-2 rounded"
-          required
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/10"
         />
-        <button type="submit" className="w-full bg-black text-white p-2 rounded">
-          Sign Up
-        </button>
-      </form>
+
+        <Link href="/" className="relative flex items-center gap-2 w-fit">
+          <span className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center text-white text-sm font-bold">
+            AI
+          </span>
+          <span className="text-white font-semibold tracking-tight">
+            Lecture Notes Assistant
+          </span>
+        </Link>
+
+        <div className="relative">
+          <h2 className="text-3xl font-bold text-white leading-tight max-w-md">
+            Join and turn your lectures into notes that study themselves.
+          </h2>
+          <ul className="mt-8 space-y-4">
+            {[
+              'Free to get started, no credit card',
+              'Transcripts, notes, and citations in minutes',
+              'Everything organized by course automatically',
+            ].map((item) => (
+              <li key={item} className="flex items-center gap-3 text-white/90">
+                <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-xs shrink-0">
+                  ✓
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="relative text-white/70 text-sm">
+          © {new Date().getFullYear()} Lecture Notes Assistant
+        </p>
+      </div>
+
+      {/* Form panel */}
+      <div className="flex-1 flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm">
+          <Link
+            href="/"
+            className="lg:hidden inline-flex items-center gap-2 mb-8"
+          >
+            <span className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm font-bold">
+              AI
+            </span>
+            <span className="font-semibold tracking-tight text-text-primary">
+              Lecture Notes Assistant
+            </span>
+          </Link>
+
+          <h1 className="text-2xl font-bold text-text-primary tracking-tight">
+            Create your account
+          </h1>
+          <p className="text-text-secondary text-sm mt-1.5">
+            Already have an account?{' '}
+            <Link href="/login" className="text-accent font-medium hover:text-accent-hover">
+              Log in
+            </Link>
+          </p>
+
+          <form onSubmit={handleSignup} className="space-y-4 mt-8">
+            {error && (
+              <p className="bg-status-failed-bg text-status-failed-text text-sm px-4 py-2.5 rounded-xl">
+                {error}
+              </p>
+            )}
+
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-1.5">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border border-border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                required
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-1.5">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-border rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-accent/40"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-accent hover:bg-accent-hover text-white font-medium py-2.5 rounded-xl shadow-sm hover:shadow-md transition-all disabled:opacity-60"
+            >
+              {submitting ? 'Creating account...' : 'Sign Up'}
+            </button>
+          </form>
+        </div>
+      </div>
     </main>
   );
 }
