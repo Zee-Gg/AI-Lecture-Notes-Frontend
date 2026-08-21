@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { apiFetch } from "../lib/apiClient";
+import { supabase } from "../lib/supabaseClient";
 import { Course } from "../types/database";
 import CourseCard from "../components/CourseCard";
 import CreateCourseModal from "../components/CreateCourseModal";
@@ -10,6 +13,7 @@ export default function Dashboard() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
 
   const fetchCourses = () => {
     return apiFetch<Course[]>("/api/courses").then((data) => {
@@ -27,10 +31,32 @@ export default function Dashboard() {
     fetchCourses().catch((err) => console.error(err));
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
+
   return (
     <ProtectedRoute>
       <main className="min-h-screen bg-surface-alt px-6 py-10 sm:px-12">
         <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/" className="flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-accent flex items-center justify-center text-white text-xs font-bold">
+                AI
+              </span>
+              <span className="text-sm font-semibold text-text-primary tracking-tight">
+                Lecture Notes Assistant
+              </span>
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="text-text-secondary hover:text-text-primary text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+            >
+              Log Out
+            </button>
+          </div>
+
           <div className="flex items-center justify-between mb-10">
             <div>
               <h1 className="text-3xl font-bold text-text-primary tracking-tight">
