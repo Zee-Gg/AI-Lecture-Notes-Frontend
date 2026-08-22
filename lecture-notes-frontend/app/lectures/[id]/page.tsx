@@ -24,6 +24,23 @@ export default function LectureDetail() {
   const [chunkCount, setChunkCount] = useState<number | null>(null);
   const [retrying, setRetrying] = useState(false);
 
+  // Fetch the lecture itself
+  useEffect(() => {
+    if (!id) return;
+    setLectureLoading(true);
+    setLectureError(null);
+
+    apiFetch<Lecture>(`/api/lectures/${id}`)
+      .then((data) => setLecture(data))
+      .catch((err) => {
+        console.error(err);
+        setLectureError(
+          err instanceof Error ? err.message : "Lecture could not be loaded",
+        );
+      })
+      .finally(() => setLectureLoading(false));
+  }, [id]);
+
   useEffect(() => {
     if (lecture?.status === "done") {
       apiFetch<{ count: number }>(`/api/lectures/${id}/chunk-count`)
@@ -32,7 +49,6 @@ export default function LectureDetail() {
     }
   }, [lecture?.status, id]);
 
-  // Fetch the lecture itself
   const handleRetry = async () => {
     setRetrying(true);
     try {
