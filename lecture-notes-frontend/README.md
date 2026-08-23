@@ -2,7 +2,7 @@
 
 A web app that turns lecture recordings into structured, searchable study material. Upload an audio recording and it's transcribed automatically, with AI-generated key concepts, definitions, formulas, and teacher-emphasized points extracted for you — all organized by course, with a chat interface to ask questions across an entire course's lectures.
 
-This is the frontend (Next.js). It talks to a separate backend API for transcription, note generation, and chat.
+This is the frontend (Next.js). It talks to a separate backend API for transcription, note generation, and chat — see [AI Lecture Notes Backend](https://github.com/Zee-Gg/AI-Lecture-Notes-Backend).
 
 ## Features
 
@@ -27,7 +27,7 @@ This is the frontend (Next.js). It talks to a separate backend API for transcrip
 
 - Node.js 18.18+ and npm
 - A Supabase project (for auth)
-- The backend API running locally or deployed (see the backend repo)
+- The backend API running locally or deployed — see [AI Lecture Notes Backend](https://github.com/Zee-Gg/AI-Lecture-Notes-Backend)
 
 ### Setup
 
